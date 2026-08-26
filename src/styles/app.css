@@ -1,7 +1,29 @@
 @import "tailwindcss";
 
+/* Vazirmatn has no emoji, so an emoji used to come from whatever the browser
+   picked last — a different font per OS, and not necessarily the same one the
+   print path resolved. Naming the candidates explicitly makes screen and PDF
+   agree. The metric overrides pin the emoji into a Vazirmatn-sized line box so
+   a line carrying one is never taller than its neighbours; the glyph itself is
+   untouched. If none of these exist locally the rule is simply skipped and the
+   usual fallback applies. */
+@font-face {
+  font-family: "Preview Emoji";
+  src: local("Noto Color Emoji"),
+       local("Apple Color Emoji"),
+       local("Segoe UI Emoji"),
+       local("Twemoji Mozilla"),
+       local("EmojiOne Color"),
+       local("JoyPixels");
+  ascent-override: 92%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  unicode-range: U+FE0F, U+20E3, U+1F000-1F0FF, U+1F100-1F1FF, U+1F300-1FAFF,
+                 U+2600-26FF, U+2700-27BF, U+2B00-2BFF;
+}
+
 :root {
-  font-family: "Vazirmatn", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Vazirmatn", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Preview Emoji", sans-serif;
   color-scheme: light;
   background: #f8fafc;
   color: #020617;

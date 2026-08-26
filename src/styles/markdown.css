@@ -165,7 +165,7 @@
 .markdown-preview code * {
   direction: ltr;
   text-align: left;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", "Preview Emoji", monospace;
 }
 
 .markdown-preview code {

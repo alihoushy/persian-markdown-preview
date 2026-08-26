@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Eye, LoaderCircle, RotateCcw, ShieldCheck } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Eye, FileDown, LoaderCircle, RotateCcw, ShieldCheck } from 'lucide-react';
 import { SourcePanel } from './components/SourcePanel';
 import { MarkdownPreview } from './components/MarkdownPreview';
 import type { ReadMarkdownResult } from './lib/file';
+import { exportAsPdf, isPdfDialogDismissed, toPdfFileName } from './lib/pdf';
+import { PdfExportDialog } from './components/PdfExportDialog';
 
 const SAMPLE_MARKDOWN = `# پیش‌نمایش Markdown فارسی
 
@@ -110,6 +112,12 @@ function normalizeRemoteMarkdownUrl(rawUrl: string): URL {
   return url;
 }
 
+const printDateFormatter = new Intl.DateTimeFormat('fa-IR', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
 function clearUrlQueryParam(): void {
   const url = new URL(window.location.href);
 
@@ -126,8 +134,13 @@ export default function App() {
   const [markdown, setMarkdown] = useState('');
   const [error, setError] = useState('');
   const [isRemoteLoading, setIsRemoteLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
+  const printAreaRef = useRef<HTMLElement | null>(null);
 
   const previewMarkdown = useMemo(() => markdown.trim() ? markdown : '', [markdown]);
+  const hasContent = previewMarkdown.length > 0;
+  const documentTitle = loadedFile ? toPdfFileName(loadedFile.name) : 'سند Markdown';
 
   useEffect(() => {
     const remoteUrlParam = new URLSearchParams(window.location.search).get('url');
@@ -204,6 +217,32 @@ export default function App() {
     clearUrlQueryParam();
   }
 
+  function startPdfExport(): void {
+    if (!hasContent || isExporting) {
+      return;
+    }
+
+    // The print dialog's "background graphics" and "headers and footers"
+    // options visibly change the result, so walk the user past them once.
+    if (isPdfDialogDismissed()) {
+      void downloadPdf();
+      return;
+    }
+
+    setIsExportDialogOpen(true);
+  }
+
+  async function downloadPdf(): Promise<void> {
+    setIsExportDialogOpen(false);
+    setIsExporting(true);
+
+    try {
+      await exportAsPdf({ fileName: documentTitle, container: printAreaRef.current });
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
   function loadSample(): void {
     setLoadedFile({
       name: 'sample-fa.md',
@@ -217,9 +256,9 @@ export default function App() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#e2e8f0,_transparent_35%),linear-gradient(135deg,_#f8fafc,_#e2e8f0)] px-4 py-8 text-slate-950 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl">
-        <header className="mb-8 rounded-3xl border border-white/70 bg-white/75 p-6 shadow-sm backdrop-blur md:p-8">
+    <main className="app-main min-h-screen bg-[radial-gradient(circle_at_top,_#e2e8f0,_transparent_35%),linear-gradient(135deg,_#f8fafc,_#e2e8f0)] px-4 py-8 text-slate-950 sm:px-6 lg:px-8">
+      <div className="app-shell mx-auto max-w-6xl">
+        <header className="no-print mb-8 rounded-3xl border border-white/70 bg-white/75 p-6 shadow-sm backdrop-blur md:p-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-xs font-bold text-white">
@@ -235,6 +274,20 @@ export default function App() {
             </div>
 
             <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={startPdfExport}
+                disabled={!hasContent || isExporting}
+                title={hasContent ? 'خروجی PDF با همین ظاهر' : 'ابتدا یک فایل Markdown را باز کنید'}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+              >
+                {isExporting ? (
+                  <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <FileDown className="h-4 w-4" aria-hidden="true" />
+                )}
+                خروجی PDF
+              </button>
               <button
                 type="button"
                 onClick={loadSample}
@@ -256,7 +309,7 @@ export default function App() {
         </header>
 
         <div className="grid gap-6 lg:grid-row-[420px_1fr]">
-          <section className="min-w-0 space-y-4">
+          <section className="no-print min-w-0 space-y-4">
             <SourcePanel selectedFile={loadedFile} onLoaded={handleLoaded} onError={setError} />
 
             {isRemoteLoading && (
@@ -273,10 +326,23 @@ export default function App() {
             )}
           </section>
 
-          <section className="min-w-0">
+          <section ref={printAreaRef} className="print-area min-w-0">
+            {hasContent && (
+              <div className="print-only print-header">
+                <span className="print-header-title">{documentTitle}</span>
+                <span className="print-header-date">{printDateFormatter.format(new Date())}</span>
+              </div>
+            )}
             <MarkdownPreview markdown={previewMarkdown} />
           </section>
         </div>
+
+        {isExportDialogOpen && (
+          <PdfExportDialog
+            onConfirm={() => void downloadPdf()}
+            onCancel={() => setIsExportDialogOpen(false)}
+          />
+        )}
       </div>
     </main>
   );

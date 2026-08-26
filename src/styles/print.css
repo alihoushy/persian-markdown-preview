@@ -1,0 +1,508 @@
+/* ---------------------------------------------------------------------------
+   Print / PDF stylesheet
+   ---------------------------------------------------------------------------
+   The PDF export goes through the browser's own print engine (window.print()),
+   so Persian text stays vector, selectable and correctly shaped, links stay
+   clickable and Vazirmatn is embedded automatically. This file re-creates the
+   on-screen preview design on paper.
+
+   One deliberate divergence: Chrome ships the print dialog with "Background
+   graphics" OFF, which drops every background-color. So anything that would be
+   unreadable without its background (the dark code block, the accent-coloured
+   checkbox) is redrawn here with foreground-only means — text, borders and
+   glyphs, which always print. Everything that merely looks nicer with its
+   background (alerts, table head, blockquote) keeps it behind
+   print-color-adjust and degrades to a bordered, still-correct block.
+--------------------------------------------------------------------------- */
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 18mm 17mm 16mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* App chrome: header, source panel, buttons, alerts, dialogs. */
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block;
+  }
+
+  /* Neutralize the app shell so the document starts at the page margin. */
+  .app-main {
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .app-shell {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .app-shell > .grid {
+    display: block !important;
+    gap: 0 !important;
+  }
+
+  .print-area {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* ---------- Print-only document header ---------- */
+
+  .print-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    direction: rtl;
+    margin: 0 0 2rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid #cbd5e1;
+    font-size: 8.5pt;
+    letter-spacing: 0.01em;
+    color: #64748b;
+  }
+
+  .print-header-title {
+    font-weight: 700;
+    color: #1e293b;
+    overflow-wrap: anywhere;
+  }
+
+  .print-header-date {
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- The document itself ---------- */
+
+  .markdown-preview {
+    min-height: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    overflow: visible !important;
+    font-size: 10.5pt;
+    line-height: 1.9;
+    color: #1e293b;
+  }
+
+  /* ---------- Headings ---------- */
+
+  /* Headings lead their section: generous space above, tight below, and never
+     stranded at the foot of a page. */
+  .markdown-preview h1,
+  .markdown-preview h2,
+  .markdown-preview h3,
+  .markdown-preview h4,
+  .markdown-preview h5,
+  .markdown-preview h6 {
+    break-after: avoid-page;
+    break-inside: avoid-page;
+    line-height: 1.55;
+    color: #0f172a;
+  }
+
+  .markdown-preview h1 {
+    font-size: 21pt;
+    margin: 0 0 1.1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .markdown-preview h2 {
+    font-size: 15pt;
+    margin: 2rem 0 0.85rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .markdown-preview h3 {
+    font-size: 12.5pt;
+    margin: 1.5rem 0 0.6rem;
+  }
+
+  .markdown-preview h4,
+  .markdown-preview h5,
+  .markdown-preview h6 {
+    font-size: 11pt;
+    margin: 1.2rem 0 0.5rem;
+  }
+
+  /* ---------- Text ---------- */
+
+  .markdown-preview p {
+    margin: 0.85rem 0;
+    orphans: 3;
+    widows: 3;
+  }
+
+  .markdown-preview li,
+  .markdown-preview dd {
+    orphans: 2;
+    widows: 2;
+  }
+
+  .markdown-preview ul,
+  .markdown-preview ol {
+    margin: 0.85rem 0;
+  }
+
+  .markdown-preview a {
+    color: #1d4ed8;
+    text-underline-offset: 3px;
+  }
+
+  .markdown-preview hr {
+    border-top-color: #e2e8f0;
+    margin: 1.6rem 0;
+  }
+
+  /* The tint needs background graphics; the rule underneath does not, so a
+     highlighted phrase still reads as highlighted either way. */
+  .markdown-preview mark {
+    border-bottom: 1.5px solid #eab308;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ---------- Task lists ---------- */
+
+  /* A native checkbox paints as a form control, which prints washed-out (or
+     not at all) without background graphics. Redraw it from a border + glyph. */
+  .markdown-preview li > input[type="checkbox"] {
+    display: none;
+  }
+
+  .markdown-preview li:has(> input[type="checkbox"])::before {
+    content: "";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.05em;
+    height: 1.05em;
+    margin-inline-end: 0.5em;
+    border: 1px solid #94a3b8;
+    border-radius: 0.25em;
+    font-size: 0.9em;
+    font-weight: 900;
+    line-height: 1;
+    vertical-align: -0.18em;
+    color: #0f172a;
+  }
+
+  .markdown-preview li:has(> input[type="checkbox"]:checked)::before {
+    content: "✓";
+    border-color: #0f172a;
+  }
+
+  /* ---------- Tables ---------- */
+
+  /* Separate borders so the rounded frame of the on-screen card survives; the
+     doubled edges are avoided by giving each cell only its trailing rules. */
+  .markdown-preview table {
+    display: table !important;
+    width: 100% !important;
+    overflow: visible !important;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.75rem;
+    margin: 1.2rem 0;
+    font-size: 9.5pt;
+    line-height: 1.7;
+    break-inside: auto;
+  }
+
+  /* Repeat the head on every page a long table spills onto. */
+  .markdown-preview thead {
+    display: table-header-group;
+    background: #f1f5f9 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* A head whose cells are all empty is pure noise on paper. */
+  .markdown-preview thead:not(:has(th:not(:empty))) {
+    display: none;
+  }
+
+  .markdown-preview tr {
+    break-inside: avoid;
+  }
+
+  .markdown-preview th,
+  .markdown-preview td {
+    border: 0;
+    border-bottom: 1px solid #e2e8f0;
+    border-inline-end: 1px solid #e2e8f0;
+    padding: 0.5rem 0.7rem;
+    min-width: 0;
+    vertical-align: top;
+  }
+
+  .markdown-preview th {
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .markdown-preview th:last-child,
+  .markdown-preview td:last-child {
+    border-inline-end: 0;
+  }
+
+  .markdown-preview tbody tr:last-child th,
+  .markdown-preview tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  /* Round the four corner cells so the frame reads as one rounded card. */
+  .markdown-preview thead tr:first-child th:first-child,
+  .markdown-preview tbody tr:first-child td:first-child {
+    border-start-start-radius: 0.7rem;
+  }
+
+  .markdown-preview thead tr:first-child th:last-child,
+  .markdown-preview tbody tr:first-child td:last-child {
+    border-start-end-radius: 0.7rem;
+  }
+
+  .markdown-preview tbody tr:last-child td:first-child {
+    border-end-start-radius: 0.7rem;
+  }
+
+  .markdown-preview tbody tr:last-child td:last-child {
+    border-end-end-radius: 0.7rem;
+  }
+
+  /* ---------- Quotes, alerts, figures ---------- */
+
+  .markdown-preview blockquote {
+    margin: 1.2rem 0;
+    padding: 0.75rem 1.1rem;
+    border-right-width: 3px;
+    border-radius: 0.75rem 0 0 0.75rem;
+    color: #475569;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .markdown-preview .markdown-alert {
+    margin: 1.2rem 0;
+    padding: 0.7rem 1.1rem;
+    border-right-width: 3px;
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .markdown-preview figure,
+  .markdown-preview dl {
+    break-inside: avoid;
+  }
+
+  .markdown-preview dt {
+    break-after: avoid-page;
+  }
+
+  .markdown-preview img {
+    break-inside: avoid;
+    max-height: 20cm;
+    object-fit: contain;
+    margin: 1.2rem auto;
+  }
+
+  /* ---------- Code ---------- */
+
+  /* The on-screen block is near-black with the github-dark palette. On paper
+     that needs "Background graphics" to be readable at all, so print gets the
+     light twin of the same theme: identical geometry, inverted palette.
+     break-inside: avoid keeps short snippets whole — an oversized block is
+     still split by the engine rather than overflowing. */
+  .markdown-preview pre {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.85rem;
+    padding: 0.85rem 1rem;
+    margin: 1.2rem 0;
+    overflow: visible !important;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: 8.5pt;
+    line-height: 1.75;
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .markdown-preview pre code {
+    width: auto !important;
+    min-width: 0 !important;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .markdown-preview pre code,
+  .markdown-preview pre code * {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  /* Inline code: no border, exactly like the screen — the monospace face
+     already reads as code once the tint is gone. */
+  .markdown-preview :not(pre) > code {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    border: 0;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.88em;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* highlight.js: swap the github-dark palette for its light counterpart. */
+  .markdown-preview .hljs {
+    background: transparent !important;
+    color: #24292e !important;
+  }
+
+  .markdown-preview .hljs-doctag,
+  .markdown-preview .hljs-keyword,
+  .markdown-preview .hljs-meta .hljs-keyword,
+  .markdown-preview .hljs-template-tag,
+  .markdown-preview .hljs-template-variable,
+  .markdown-preview .hljs-type,
+  .markdown-preview .hljs-variable.language_ {
+    color: #d73a49 !important;
+  }
+
+  .markdown-preview .hljs-title,
+  .markdown-preview .hljs-title.class_,
+  .markdown-preview .hljs-title.class_.inherited__,
+  .markdown-preview .hljs-title.function_ {
+    color: #6f42c1 !important;
+  }
+
+  .markdown-preview .hljs-attr,
+  .markdown-preview .hljs-attribute,
+  .markdown-preview .hljs-literal,
+  .markdown-preview .hljs-meta,
+  .markdown-preview .hljs-number,
+  .markdown-preview .hljs-operator,
+  .markdown-preview .hljs-variable,
+  .markdown-preview .hljs-selector-attr,
+  .markdown-preview .hljs-selector-class,
+  .markdown-preview .hljs-selector-id {
+    color: #005cc5 !important;
+  }
+
+  .markdown-preview .hljs-regexp,
+  .markdown-preview .hljs-string,
+  .markdown-preview .hljs-meta .hljs-string {
+    color: #032f62 !important;
+  }
+
+  .markdown-preview .hljs-built_in,
+  .markdown-preview .hljs-symbol {
+    color: #e36209 !important;
+  }
+
+  .markdown-preview .hljs-comment,
+  .markdown-preview .hljs-code,
+  .markdown-preview .hljs-formula {
+    color: #6a737d !important;
+  }
+
+  .markdown-preview .hljs-name,
+  .markdown-preview .hljs-quote,
+  .markdown-preview .hljs-selector-tag,
+  .markdown-preview .hljs-selector-pseudo {
+    color: #22863a !important;
+  }
+
+  .markdown-preview .hljs-subst {
+    color: #24292e !important;
+  }
+
+  .markdown-preview .hljs-section {
+    color: #005cc5 !important;
+    font-weight: 700;
+  }
+
+  .markdown-preview .hljs-bullet {
+    color: #735c0f !important;
+  }
+
+  .markdown-preview .hljs-addition {
+    color: #22863a !important;
+  }
+
+  .markdown-preview .hljs-deletion {
+    color: #b31d28 !important;
+  }
+
+  /* ---------- Mermaid ---------- */
+
+  .markdown-preview pre.mermaid {
+    break-inside: avoid;
+    background: transparent !important;
+    border: 0;
+    padding: 0.5rem 0;
+    margin: 1.2rem 0;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .markdown-preview pre.mermaid svg {
+    max-width: 100% !important;
+    /* Keeps a diagram from monopolizing a page — and small enough that it
+       usually still fits under the text it follows. */
+    max-height: 10cm;
+    height: auto !important;
+  }
+
+  /* An unrendered diagram would print as raw source; drop it instead. */
+  .markdown-preview pre.mermaid:not(.mermaid-rendered):not(.mermaid-error) {
+    display: none;
+  }
+
+  /* ---------- Footnotes ---------- */
+
+  .markdown-preview .footnotes {
+    margin-top: 2rem;
+    border-top-color: #e2e8f0;
+    font-size: 9pt;
+  }
+
+  /* Back-links are dead weight on paper. */
+  .markdown-preview [data-footnote-backref] {
+    display: none;
+  }
+}
