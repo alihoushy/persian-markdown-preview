@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { hasMermaidBlocks, normalizeMarkdownLinks, renderMarkdown } from '../lib/markdown';
+import { hasMermaidBlocks, isolateFlowArrows, normalizeMarkdownLinks, renderMarkdown } from '../lib/markdown';
 import { renderMermaidDiagrams } from '../lib/mermaid';
 
 type MarkdownPreviewProps = {
@@ -12,6 +12,7 @@ export function MarkdownPreview({ markdown }: MarkdownPreviewProps) {
 
   useEffect(() => {
     normalizeMarkdownLinks(previewRef.current);
+    isolateFlowArrows(previewRef.current);
 
     if (previewRef.current && hasMermaidBlocks(previewRef.current)) {
       void renderMermaidDiagrams(previewRef.current);

@@ -169,7 +169,6 @@
 }
 
 .markdown-preview code {
-  unicode-bidi: plaintext;
   background: #f1f5f9;
   color: #0f172a;
   padding: 0.15rem 0.4rem;
@@ -203,9 +202,22 @@
 }
 
 
+/* `plaintext` gives each bidi paragraph its own base direction, taken from its
+   first strong character. That is exactly right for a code span sitting inside
+   Persian prose, and exactly wrong inside a block: in a `pre` every line is its
+   own bidi paragraph, so an ASCII-art line that happens to start with a Persian
+   label gets reversed end to end while the line above it — starting with a
+   Latin word — does not. The boxes stay put and their captions swap sides.
+   So: `plaintext` for inline code only, a hard LTR base for blocks. */
 .markdown-preview :not(pre) > code {
+  unicode-bidi: plaintext;
   white-space: break-spaces;
   overflow-wrap: anywhere;
+}
+
+.markdown-preview pre,
+.markdown-preview pre code {
+  unicode-bidi: isolate;
 }
 
 .markdown-preview pre code,

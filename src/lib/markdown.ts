@@ -97,6 +97,56 @@ export function renderMarkdown(markdown: string): string {
   });
 }
 
+// Arrows written as "leads to" separators in Persian prose. The Unicode bidi
+// algorithm resolves a neutral character sitting between two Latin runs to LTR
+// (rule N1), so in `... لایه‌ی Registrar API → retry ارزش دارد` the arrow joins
+// its Latin neighbours into one left-to-right island: `Registrar API → retry`
+// is laid out as a unit in the middle of the line and `ارزش دارد` is stranded
+// at the far end, tearing the phrase in half. Fencing each arrow with RLM makes
+// both of its neighbours strongly RTL, so the arrow stays in the paragraph's
+// own direction and each Latin word keeps its place in the reading order.
+// Only arrows are touched — widening this to every neutral would reverse
+// genuinely left-to-right runs such as `E = mc^2`.
+const FLOW_ARROWS = /[\u2190-\u21FF\u27F0-\u27FF\u2900-\u297F]+/g;
+const RLM = '\u200F';
+
+/** Keeps arrow separators inside the right-to-left flow of the line. */
+export function isolateFlowArrows(container: HTMLElement | null): void {
+  if (!container) {
+    return;
+  }
+
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      // Code keeps its own direction rules; never rewrite what it contains.
+      if (node.parentElement?.closest('pre, code')) {
+        return NodeFilter.FILTER_REJECT;
+      }
+
+      FLOW_ARROWS.lastIndex = 0;
+
+      return FLOW_ARROWS.test(node.nodeValue || '')
+        ? NodeFilter.FILTER_ACCEPT
+        : NodeFilter.FILTER_REJECT;
+    },
+  });
+
+  const targets: Text[] = [];
+  let node = walker.nextNode();
+
+  while (node) {
+    targets.push(node as Text);
+    node = walker.nextNode();
+  }
+
+  targets.forEach((text) => {
+    text.nodeValue = (text.nodeValue || '')
+      .replace(FLOW_ARROWS, (arrows) => `${RLM}${arrows}${RLM}`)
+      // Collapsing runs keeps a second pass over the same node a no-op.
+      .replace(/\u200F{2,}/g, RLM);
+  });
+}
+
 export function normalizeMarkdownLinks(container: HTMLElement | null): void {
   if (!container) {
     return;
