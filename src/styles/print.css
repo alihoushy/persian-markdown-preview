@@ -19,10 +19,6 @@
    print-color-adjust and degrades to a bordered, still-correct block.
 --------------------------------------------------------------------------- */
 
-.print-only {
-  display: none;
-}
-
 @media print {
   /* Pin the theme tokens the rendered Markdown reads from, so every one of the
      35 themes prints as the same well-set document. */
@@ -74,10 +70,6 @@
     display: none !important;
   }
 
-  .print-only {
-    display: block;
-  }
-
   /* Neutralize the app shell so the document starts at the page margin. */
   .app-main {
     min-height: 0 !important;
@@ -104,34 +96,10 @@
     padding: 0 !important;
   }
 
-  /* ---------- Print-only document header ---------- */
-
-  .print-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    direction: rtl;
-    margin: 0 0 2rem;
-    padding-bottom: 0.55rem;
-    border-bottom: 1px solid #cbd5e1;
-    font-size: 8.5pt;
-    letter-spacing: 0.01em;
-    color: #64748b;
-  }
-
-  .print-header-title {
-    font-weight: 700;
-    color: #1e293b;
-    overflow-wrap: anywhere;
-  }
-
-  .print-header-date {
-    flex-shrink: 0;
-    font-variant-numeric: tabular-nums;
-  }
-
   /* ---------- The document itself ---------- */
+
+  /* No running header is added on top: the document's own first heading is
+     its title, and a file name or "pasted text" label above it is just noise. */
 
   .markdown-preview {
     min-height: 0 !important;

@@ -1,5 +1,8 @@
 export const MAX_MARKDOWN_FILE_SIZE = 2 * 1024 * 1024;
 
+/** Stands in for a file name when the Markdown was pasted rather than opened. */
+export const PASTED_TEXT_NAME = 'متن پیست‌شده';
+
 export type ReadMarkdownResult = {
   name: string;
   size: number;

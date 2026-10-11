@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ClipboardPaste, Eye, Trash2, UploadCloud } from 'lucide-react';
 import { FileDropzone } from './FileDropzone';
-import type { ReadMarkdownResult } from '../lib/file';
+import { PASTED_TEXT_NAME, type ReadMarkdownResult } from '../lib/file';
 
 type SourcePanelProps = {
   selectedFile: Pick<ReadMarkdownResult, 'name' | 'size'> | null;
@@ -25,7 +25,7 @@ export function SourcePanel({ selectedFile, onLoaded, onError }: SourcePanelProp
 
     onError('');
     onLoaded({
-      name: 'متن پیست‌شده',
+      name: PASTED_TEXT_NAME,
       size: new Blob([content]).size,
       content,
     });

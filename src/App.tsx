@@ -2,10 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Eye, FileDown, LoaderCircle, RotateCcw, ShieldCheck } from 'lucide-react';
 import { SourcePanel } from './components/SourcePanel';
 import { MarkdownPreview } from './components/MarkdownPreview';
-import type { ReadMarkdownResult } from './lib/file';
-import { exportAsPdf, isPdfDialogDismissed, toPdfFileName } from './lib/pdf';
+import { PASTED_TEXT_NAME, type ReadMarkdownResult } from './lib/file';
+import { exportAsPdf, isPdfDialogDismissed } from './lib/pdf';
 import { PdfExportDialog } from './components/PdfExportDialog';
 import { ThemePicker } from './components/ThemePicker';
+import { GitHubBadge } from './components/GitHubBadge';
+import { SiteFooter } from './components/SiteFooter';
 
 const SAMPLE_MARKDOWN = `# پیش‌نمایش Markdown فارسی
 
@@ -113,12 +115,6 @@ function normalizeRemoteMarkdownUrl(rawUrl: string): URL {
   return url;
 }
 
-const printDateFormatter = new Intl.DateTimeFormat('fa-IR', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-});
-
 function clearUrlQueryParam(): void {
   const url = new URL(window.location.href);
 
@@ -141,7 +137,6 @@ export default function App() {
 
   const previewMarkdown = useMemo(() => markdown.trim() ? markdown : '', [markdown]);
   const hasContent = previewMarkdown.length > 0;
-  const documentTitle = loadedFile ? toPdfFileName(loadedFile.name) : 'سند Markdown';
 
   useEffect(() => {
     const remoteUrlParam = new URLSearchParams(window.location.search).get('url');
@@ -238,10 +233,22 @@ export default function App() {
     setIsExporting(true);
 
     try {
-      await exportAsPdf({ fileName: documentTitle, container: printAreaRef.current });
+      await exportAsPdf({ fileName: suggestPdfName(), container: printAreaRef.current });
     } finally {
       setIsExporting(false);
     }
+  }
+
+  /**
+   * Pasted text has no file name of its own, so the document's first heading
+   * stands in for it rather than the generic tab label.
+   */
+  function suggestPdfName(): string | undefined {
+    if (loadedFile?.name !== PASTED_TEXT_NAME) {
+      return loadedFile?.name;
+    }
+
+    return printAreaRef.current?.querySelector('h1, h2, h3, h4, h5, h6')?.textContent ?? undefined;
   }
 
   function loadSample(): void {
@@ -262,10 +269,13 @@ export default function App() {
         <header className="no-print mb-8 rounded-3xl border border-base-content/10 bg-base-100 p-6 shadow-sm md:p-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-neutral px-4 py-2 text-xs font-bold text-neutral-content">
-                <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                پردازش داخل مرورگر انجام میشود
-              </p>
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <p className="inline-flex items-center gap-2 rounded-full bg-neutral px-4 py-2 text-xs font-bold text-neutral-content">
+                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                  پردازش داخل مرورگر انجام میشود
+                </p>
+                <GitHubBadge />
+              </div>
               <h1 className="text-3xl font-black tracking-tight text-base-content md:text-5xl">
                 مارک داون فارسی
               </h1>
@@ -329,15 +339,11 @@ export default function App() {
           </section>
 
           <section ref={printAreaRef} className="print-area min-w-0">
-            {hasContent && (
-              <div className="print-only print-header">
-                <span className="print-header-title">{documentTitle}</span>
-                <span className="print-header-date">{printDateFormatter.format(new Date())}</span>
-              </div>
-            )}
             <MarkdownPreview markdown={previewMarkdown} />
           </section>
         </div>
+
+        <SiteFooter />
 
         {isExportDialogOpen && (
           <PdfExportDialog

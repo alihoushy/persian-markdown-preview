@@ -45,6 +45,8 @@ export function rememberPdfDialogDismissal() {
 /** Turns "گزارش ماهانه.md" into the default file name of the saved PDF. */
 export function toPdfFileName(sourceName: string | undefined): string {
   const base = (sourceName || '')
+    // A heading used as the name can carry the RLMs normalizeRtlArrows adds.
+    .replace(/[‎‏‪-‮⁦-⁩]/g, '')
     .replace(/\.(md|markdown|txt)$/i, '')
     .replace(/[\\/:*?"<>|]+/g, '-')
     .replace(/\s+/g, ' ')
@@ -80,7 +82,7 @@ async function waitForDiagrams(container: HTMLElement | null): Promise<void> {
 }
 
 type ExportPdfOptions = {
-  /** Source file name; becomes the suggested PDF name in the print dialog. */
+  /** Source file name or heading; becomes the suggested PDF name in the print dialog. */
   fileName?: string;
   /** Preview element, used to wait for pending Mermaid diagrams. */
   container?: HTMLElement | null;
