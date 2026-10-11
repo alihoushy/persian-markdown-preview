@@ -97,21 +97,62 @@ export function renderMarkdown(markdown: string): string {
   });
 }
 
-// Arrows written as "leads to" separators in Persian prose. The Unicode bidi
-// algorithm resolves a neutral character sitting between two Latin runs to LTR
-// (rule N1), so in `... لایه‌ی Registrar API → retry ارزش دارد` the arrow joins
-// its Latin neighbours into one left-to-right island: `Registrar API → retry`
-// is laid out as a unit in the middle of the line and `ارزش دارد` is stranded
-// at the far end, tearing the phrase in half. Fencing each arrow with RLM makes
-// both of its neighbours strongly RTL, so the arrow stays in the paragraph's
-// own direction and each Latin word keeps its place in the reading order.
+// Arrows written as "leads to" separators in Persian prose need two fixes.
+//
+// Order: the Unicode bidi algorithm resolves a neutral character sitting
+// between two Latin runs to LTR (rule N1), so in `... لایه‌ی Registrar API →
+// retry ارزش دارد` the arrow joins its Latin neighbours into one left-to-right
+// island — `Registrar API → retry` is laid out as a unit in the middle of the
+// line and `ارزش دارد` is stranded at the far end, tearing the phrase in half.
+// Fencing each arrow with RLM makes both neighbours strongly RTL, so the arrow
+// stays in the paragraph's own direction and each Latin word keeps its place.
 // Only arrows are touched — widening this to every neutral would reverse
 // genuinely left-to-right runs such as `E = mc^2`.
-const FLOW_ARROWS = /[\u2190-\u21FF\u27F0-\u27FF\u2900-\u297F]+/g;
+//
+// Shape: arrows are not in Unicode's Bidi_Mirrored set, so a `→` keeps pointing
+// right even though the text now flows leftwards, and ends up pointing back at
+// what it came from. Mirroring the glyph makes it point the way the reader is
+// moving.
+const ARROW_MIRRORS: Array<[string, string]> = [
+  ['\u2190', '\u2192'], // ← →
+  ['\u219A', '\u219B'], // ↚ ↛
+  ['\u219C', '\u219D'], // ↜ ↝
+  ['\u219E', '\u21A0'], // ↞ ↠
+  ['\u21A2', '\u21A3'], // ↢ ↣
+  ['\u21A4', '\u21A6'], // ↤ ↦
+  ['\u21A9', '\u21AA'], // ↩ ↪
+  ['\u21B6', '\u21B7'], // ↶ ↷
+  ['\u21BC', '\u21C0'], // ↼ ⇀
+  ['\u21BD', '\u21C1'], // ↽ ⇁
+  ['\u21C7', '\u21C9'], // ⇇ ⇉
+  ['\u21CB', '\u21CC'], // ⇋ ⇌
+  ['\u21CD', '\u21CF'], // ⇍ ⇏
+  ['\u21D0', '\u21D2'], // ⇐ ⇒
+  ['\u21DA', '\u21DB'], // ⇚ ⇛
+  ['\u21E4', '\u21E5'], // ⇤ ⇥
+  ['\u21E6', '\u21E8'], // ⇦ ⇨
+  ['\u27F5', '\u27F6'], // ⟵ ⟶
+  ['\u27F8', '\u27F9'], // ⟸ ⟹
+  ['\u27FB', '\u27FC'], // ⟻ ⟼
+  ['\u2B05', '\u27A1'], // ⬅ ➡
+];
+
+// Symmetric arrows (↔ ⇔ ⟷ ⟺) are deliberately absent: they read the same
+// either way, so flipping them would only churn the text.
+const MIRRORED_ARROW = new Map<string, string>();
+ARROW_MIRRORS.forEach(([left, right]) => {
+  MIRRORED_ARROW.set(left, right);
+  MIRRORED_ARROW.set(right, left);
+});
+
+const FLOW_ARROWS = /[\u2190-\u21FF\u27F0-\u27FF\u2900-\u297F\u27A1\u2B05]+/g;
 const RLM = '\u200F';
 
-/** Keeps arrow separators inside the right-to-left flow of the line. */
-export function isolateFlowArrows(container: HTMLElement | null): void {
+/**
+ * Mirrors arrow separators to follow the right-to-left reading direction and
+ * pins them into the line's own flow.
+ */
+export function normalizeRtlArrows(container: HTMLElement | null): void {
   if (!container) {
     return;
   }
@@ -141,7 +182,14 @@ export function isolateFlowArrows(container: HTMLElement | null): void {
 
   targets.forEach((text) => {
     text.nodeValue = (text.nodeValue || '')
-      .replace(FLOW_ARROWS, (arrows) => `${RLM}${arrows}${RLM}`)
+      .replace(FLOW_ARROWS, (arrows) => {
+        const mirrored = Array.from(arrows)
+          .map((arrow) => MIRRORED_ARROW.get(arrow) ?? arrow)
+          .reverse()
+          .join('');
+
+        return `${RLM}${mirrored}${RLM}`;
+      })
       // Collapsing runs keeps a second pass over the same node a no-op.
       .replace(/\u200F{2,}/g, RLM);
   });

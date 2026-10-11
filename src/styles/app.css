@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* All 35 daisyUI themes. `light` is the default and `dark` follows the OS until
+   the reader picks one explicitly, at which point [data-theme] on <html> wins. */
+@plugin "daisyui" {
+  themes: all;
+}
+
 /* Vazirmatn has no emoji, so an emoji used to come from whatever the browser
    picked last — a different font per OS, and not necessarily the same one the
    print path resolved. Naming the candidates explicitly makes screen and PDF
@@ -23,10 +29,9 @@
 }
 
 :root {
-  font-family: "Vazirmatn", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Preview Emoji", sans-serif;
-  color-scheme: light;
-  background: #f8fafc;
-  color: #020617;
+  --app-emoji: "Preview Emoji";
+  font-family: "Vazirmatn", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    var(--app-emoji), sans-serif;
 }
 
 * {
@@ -36,12 +41,15 @@
 html {
   direction: rtl;
   scroll-behavior: smooth;
+  background: var(--color-base-200);
 }
 
 body {
   margin: 0;
   min-width: 320px;
   overflow-x: hidden;
+  background: transparent;
+  color: var(--color-base-content);
 }
 
 button,
@@ -52,6 +60,6 @@ select {
 }
 
 ::selection {
-  background: #0f172a;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-primary-content);
 }

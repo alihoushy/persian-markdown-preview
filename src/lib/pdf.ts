@@ -18,6 +18,10 @@ const TITLE_RESTORE_FALLBACK_MS = 60_000;
  * copy/search layer suffer — so this is a hint, never a block.
  */
 export function hasDegradedPdfExport() {
+  return isFirefox();
+}
+
+function isFirefox() {
   return typeof navigator !== 'undefined' && /firefox\//i.test(navigator.userAgent);
 }
 

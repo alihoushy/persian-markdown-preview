@@ -1,11 +1,34 @@
+/* ---------------------------------------------------------------------------
+   Rendered Markdown
+   ---------------------------------------------------------------------------
+   Every colour here is derived from the active daisyUI theme, so all 35 themes
+   work without a per-theme rule. The four locals below are the shades daisyUI
+   does not ship as tokens: surfaces one step off the page, muted body text, and
+   the code panel.
+
+   The code panel is the one place that cannot be a single expression. On a
+   light theme it should stay dark — that is the design the reader knows — which
+   means pulling base-100 nearly all the way to base-content. Doing the same on
+   a dark theme would invert it into a glaring white slab, so dark themes take
+   the theme's own base-300 instead, which every daisyUI dark theme defines as a
+   step *below* the page.
+--------------------------------------------------------------------------- */
+
 .markdown-preview {
+  --md-surface: color-mix(in oklab, var(--color-base-content) 5%, var(--color-base-100));
+  --md-surface-strong: color-mix(in oklab, var(--color-base-content) 10%, var(--color-base-100));
+  --md-rule: color-mix(in oklab, var(--color-base-content) 18%, transparent);
+  --md-muted: color-mix(in oklab, var(--color-base-content) 70%, transparent);
+  --md-code-bg: color-mix(in oklab, var(--color-base-content) 92%, var(--color-base-100));
+  --md-code-fg: color-mix(in oklab, var(--color-base-100) 90%, var(--color-base-content));
+  --md-code-border: transparent;
   min-width: 0;
   max-width: 100%;
   direction: rtl;
   text-align: right;
   line-height: 2;
   font-size: 1rem;
-  color: #0f172a;
+  color: var(--color-base-content);
   overflow-wrap: anywhere;
   word-break: normal;
 }
@@ -26,7 +49,7 @@
 .markdown-preview h6 {
   direction: rtl;
   text-align: right;
-  color: #020617;
+  color: var(--color-base-content);
   font-weight: 900;
   line-height: 1.7;
   margin: 2rem 0 1rem;
@@ -38,7 +61,7 @@
 
 .markdown-preview h2 {
   font-size: clamp(1.5rem, 3vw, 2rem);
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--md-rule);
   padding-bottom: 0.5rem;
 }
 
@@ -62,7 +85,7 @@
 }
 
 .markdown-preview a {
-  color: #2563eb;
+  color: var(--color-primary);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -110,16 +133,16 @@
   width: 1.05rem;
   height: 1.05rem;
   vertical-align: middle;
-  accent-color: #0f172a;
+  accent-color: var(--color-primary);
 }
 
 .markdown-preview blockquote {
   margin: 1.5rem 0;
-  border-right: 4px solid #0f172a;
+  border-right: 4px solid var(--color-primary);
   border-left: 0;
-  background: #f8fafc;
+  background: var(--md-surface);
   padding: 1rem 1.25rem;
-  color: #475569;
+  color: var(--md-muted);
   border-radius: 1rem 0 0 1rem;
 }
 
@@ -135,12 +158,12 @@
 }
 
 .markdown-preview thead {
-  background: #f1f5f9;
+  background: var(--md-surface-strong);
 }
 
 .markdown-preview th,
 .markdown-preview td {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--md-rule);
   padding: 0.8rem 1rem;
   min-width: 120px;
 }
@@ -155,7 +178,7 @@
 
 .markdown-preview hr {
   border: 0;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--md-rule);
   margin: 2rem 0;
 }
 
@@ -165,15 +188,21 @@
 .markdown-preview code * {
   direction: ltr;
   text-align: left;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", "Preview Emoji", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", var(--app-emoji), monospace;
 }
 
 .markdown-preview code {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--md-surface-strong);
+  color: var(--color-base-content);
   padding: 0.15rem 0.4rem;
   border-radius: 0.5rem;
   font-size: 0.92em;
+}
+
+:root[data-scheme="dark"] .markdown-preview {
+  --md-code-bg: var(--color-base-300);
+  --md-code-fg: var(--color-base-content);
+  --md-code-border: color-mix(in oklab, var(--color-base-content) 14%, transparent);
 }
 
 .markdown-preview pre {
@@ -181,8 +210,9 @@
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  background: #020617;
-  color: #e2e8f0;
+  background: var(--md-code-bg);
+  color: var(--md-code-fg);
+  border: 1px solid var(--md-code-border);
   padding: 1rem;
   border-radius: 1rem;
   margin: 1.5rem 0;
@@ -226,12 +256,114 @@
   word-break: normal;
 }
 
+
+/* ---------- Syntax highlighting ---------- */
+
+/* highlight.js normally ships a fixed palette per theme file, which cannot
+   follow 35 themes. Mapping its token classes onto the theme's own semantic
+   colours makes the code panel belong to whichever theme is active, and keeps
+   the contrast the theme author already balanced. Colours are lifted toward the
+   panel background so they stay legible on the dark code surface. */
+.markdown-preview .hljs {
+  --hl-1: color-mix(in oklab, var(--color-primary) 78%, var(--md-code-fg));
+  --hl-2: color-mix(in oklab, var(--color-secondary) 78%, var(--md-code-fg));
+  --hl-3: color-mix(in oklab, var(--color-accent) 78%, var(--md-code-fg));
+  --hl-4: color-mix(in oklab, var(--color-info) 78%, var(--md-code-fg));
+  --hl-5: color-mix(in oklab, var(--color-success) 78%, var(--md-code-fg));
+  --hl-6: color-mix(in oklab, var(--color-warning) 78%, var(--md-code-fg));
+  --hl-7: color-mix(in oklab, var(--color-error) 78%, var(--md-code-fg));
+  --hl-muted: color-mix(in oklab, var(--md-code-fg) 55%, transparent);
+  background: transparent;
+  color: inherit;
+}
+
+.markdown-preview .hljs-doctag,
+.markdown-preview .hljs-keyword,
+.markdown-preview .hljs-meta .hljs-keyword,
+.markdown-preview .hljs-template-tag,
+.markdown-preview .hljs-template-variable,
+.markdown-preview .hljs-type,
+.markdown-preview .hljs-variable.language_ {
+  color: var(--hl-7);
+}
+
+.markdown-preview .hljs-title,
+.markdown-preview .hljs-title.class_,
+.markdown-preview .hljs-title.class_.inherited__,
+.markdown-preview .hljs-title.function_ {
+  color: var(--hl-2);
+}
+
+.markdown-preview .hljs-attr,
+.markdown-preview .hljs-attribute,
+.markdown-preview .hljs-literal,
+.markdown-preview .hljs-meta,
+.markdown-preview .hljs-number,
+.markdown-preview .hljs-operator,
+.markdown-preview .hljs-variable,
+.markdown-preview .hljs-selector-attr,
+.markdown-preview .hljs-selector-class,
+.markdown-preview .hljs-selector-id {
+  color: var(--hl-4);
+}
+
+.markdown-preview .hljs-regexp,
+.markdown-preview .hljs-string,
+.markdown-preview .hljs-meta .hljs-string {
+  color: var(--hl-5);
+}
+
+.markdown-preview .hljs-built_in,
+.markdown-preview .hljs-symbol {
+  color: var(--hl-6);
+}
+
+.markdown-preview .hljs-comment,
+.markdown-preview .hljs-code,
+.markdown-preview .hljs-formula {
+  color: var(--hl-muted);
+  font-style: italic;
+}
+
+.markdown-preview .hljs-name,
+.markdown-preview .hljs-quote,
+.markdown-preview .hljs-selector-tag,
+.markdown-preview .hljs-selector-pseudo {
+  color: var(--hl-3);
+}
+
+.markdown-preview .hljs-section {
+  color: var(--hl-1);
+  font-weight: 700;
+}
+
+.markdown-preview .hljs-bullet {
+  color: var(--hl-6);
+}
+
+.markdown-preview .hljs-emphasis {
+  font-style: italic;
+}
+
+.markdown-preview .hljs-strong {
+  font-weight: 700;
+}
+
+.markdown-preview .hljs-addition {
+  color: var(--hl-5);
+}
+
+.markdown-preview .hljs-deletion {
+  color: var(--hl-7);
+}
+
 /* ---------- Extended syntax ---------- */
+
 
 /* Highlight (==text==) */
 .markdown-preview mark {
-  background: #fef08a;
-  color: #1e293b;
+  background: color-mix(in oklab, var(--color-warning) 45%, var(--color-base-100));
+  color: var(--color-base-content);
   padding: 0.05rem 0.2rem;
   border-radius: 0.3rem;
 }
@@ -256,15 +388,15 @@
 
 .markdown-preview dt {
   font-weight: 800;
-  color: #0f172a;
+  color: var(--color-base-content);
   margin-top: 1rem;
 }
 
 .markdown-preview dd {
   margin: 0.25rem 1.5rem 0.25rem 0;
   padding-right: 1rem;
-  border-right: 2px solid #e2e8f0;
-  color: #334155;
+  border-right: 2px solid var(--md-rule);
+  color: var(--md-muted);
 }
 
 /* Figures / captions */
@@ -276,7 +408,7 @@
 .markdown-preview figcaption {
   margin-top: 0.5rem;
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--md-muted);
 }
 
 /* Footnotes */
@@ -295,9 +427,9 @@
 .markdown-preview .footnotes {
   margin-top: 2.5rem;
   padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--md-rule);
   font-size: 0.9rem;
-  color: #475569;
+  color: var(--md-muted);
 }
 
 .markdown-preview .footnotes ol {
@@ -314,10 +446,10 @@
 .markdown-preview .markdown-alert {
   margin: 1.5rem 0;
   padding: 0.75rem 1.25rem;
-  border-right: 4px solid #64748b;
+  border-right: 4px solid var(--color-neutral);
   border-left: 0;
   border-radius: 0.75rem 0 0 0.75rem;
-  background: #f8fafc;
+  background: var(--md-surface);
 }
 
 .markdown-preview .markdown-alert > :first-child {
@@ -342,43 +474,43 @@
 }
 
 .markdown-preview .markdown-alert-note {
-  border-color: #2563eb;
-  background: #eff6ff;
+  border-color: var(--color-info);
+  background: color-mix(in oklab, var(--color-info) 12%, var(--color-base-100));
 }
 .markdown-preview .markdown-alert-note .markdown-alert-title {
-  color: #1d4ed8;
+  color: var(--color-info);
 }
 
 .markdown-preview .markdown-alert-tip {
-  border-color: #16a34a;
-  background: #f0fdf4;
+  border-color: var(--color-success);
+  background: color-mix(in oklab, var(--color-success) 12%, var(--color-base-100));
 }
 .markdown-preview .markdown-alert-tip .markdown-alert-title {
-  color: #15803d;
+  color: var(--color-success);
 }
 
 .markdown-preview .markdown-alert-important {
-  border-color: #7c3aed;
-  background: #f5f3ff;
+  border-color: var(--color-secondary);
+  background: color-mix(in oklab, var(--color-secondary) 12%, var(--color-base-100));
 }
 .markdown-preview .markdown-alert-important .markdown-alert-title {
-  color: #6d28d9;
+  color: var(--color-secondary);
 }
 
 .markdown-preview .markdown-alert-warning {
-  border-color: #d97706;
-  background: #fffbeb;
+  border-color: var(--color-warning);
+  background: color-mix(in oklab, var(--color-warning) 12%, var(--color-base-100));
 }
 .markdown-preview .markdown-alert-warning .markdown-alert-title {
-  color: #b45309;
+  color: var(--color-warning);
 }
 
 .markdown-preview .markdown-alert-caution {
-  border-color: #dc2626;
-  background: #fef2f2;
+  border-color: var(--color-error);
+  background: color-mix(in oklab, var(--color-error) 12%, var(--color-base-100));
 }
 .markdown-preview .markdown-alert-caution .markdown-alert-title {
-  color: #b91c1c;
+  color: var(--color-error);
 }
 
 /* Mermaid diagrams */
@@ -393,7 +525,7 @@
 }
 
 .markdown-preview pre.mermaid:not(.mermaid-rendered) {
-  color: #64748b;
+  color: var(--md-muted);
   font-size: 0.85rem;
 }
 
@@ -409,9 +541,9 @@
 .markdown-preview pre.mermaid.mermaid-error {
   direction: rtl;
   text-align: right;
-  background: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
+  background: color-mix(in oklab, var(--color-error) 12%, var(--color-base-100));
+  color: var(--color-error);
+  border: 1px solid color-mix(in oklab, var(--color-error) 35%, transparent);
   border-radius: 0.75rem;
   white-space: pre-wrap;
 }

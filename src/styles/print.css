@@ -6,6 +6,10 @@
    clickable and Vazirmatn is embedded automatically. This file re-creates the
    on-screen preview design on paper.
 
+   Print always uses the paper palette, whatever theme is on screen: ink on
+   white. A dark theme sent to a printer is unreadable and a colour theme wastes
+   toner, so the tokens below are pinned rather than inherited.
+
    One deliberate divergence: Chrome ships the print dialog with "Background
    graphics" OFF, which drops every background-color. So anything that would be
    unreadable without its background (the dark code block, the accent-coloured
@@ -20,6 +24,37 @@
 }
 
 @media print {
+  /* Pin the theme tokens the rendered Markdown reads from, so every one of the
+     35 themes prints as the same well-set document. */
+  :root,
+  :root[data-theme] {
+    /* Without this the browser paints the paper outside the page box with its
+       dark-scheme default, so a dark theme prints inside a black frame. */
+    color-scheme: light;
+    --color-base-100: #ffffff;
+    --color-base-200: #f8fafc;
+    --color-base-300: #f1f5f9;
+    --color-base-content: #1e293b;
+    --color-primary: #1d4ed8;
+    --color-primary-content: #ffffff;
+    --color-secondary: #6d28d9;
+    --color-accent: #0f766e;
+    --color-neutral: #334155;
+    --color-info: #2563eb;
+    --color-success: #16a34a;
+    --color-warning: #d97706;
+    --color-error: #dc2626;
+  }
+
+  .markdown-preview {
+    --md-surface: #f8fafc;
+    --md-surface-strong: #f1f5f9;
+    --md-rule: #e2e8f0;
+    --md-muted: #475569;
+    --md-code-bg: #f8fafc;
+    --md-code-fg: #0f172a;
+  }
+
   @page {
     size: A4;
     margin: 18mm 17mm 16mm;
@@ -186,6 +221,8 @@
   /* The tint needs background graphics; the rule underneath does not, so a
      highlighted phrase still reads as highlighted either way. */
   .markdown-preview mark {
+    background: #fef08a !important;
+    color: #1e293b !important;
     border-bottom: 1.5px solid #eab308;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;

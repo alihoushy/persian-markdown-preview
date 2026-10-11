@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { hasMermaidBlocks, isolateFlowArrows, normalizeMarkdownLinks, renderMarkdown } from '../lib/markdown';
-import { renderMermaidDiagrams } from '../lib/mermaid';
+import {
+  hasMermaidBlocks,
+  normalizeMarkdownLinks,
+  normalizeRtlArrows,
+  renderMarkdown,
+} from '../lib/markdown';
+import { renderMermaidDiagrams, resetRenderedDiagrams } from '../lib/mermaid';
+import { useThemeScheme } from '../lib/useThemeScheme';
 
 type MarkdownPreviewProps = {
   markdown: string;
@@ -9,19 +15,27 @@ type MarkdownPreviewProps = {
 export function MarkdownPreview({ markdown }: MarkdownPreviewProps) {
   const previewRef = useRef<HTMLDivElement | null>(null);
   const html = useMemo(() => renderMarkdown(markdown), [markdown]);
+  const scheme = useThemeScheme();
 
   useEffect(() => {
     normalizeMarkdownLinks(previewRef.current);
-    isolateFlowArrows(previewRef.current);
-
-    if (previewRef.current && hasMermaidBlocks(previewRef.current)) {
-      void renderMermaidDiagrams(previewRef.current);
-    }
+    normalizeRtlArrows(previewRef.current);
   }, [html]);
+
+  // Mermaid bakes its palette into the SVG, so a theme change has to redraw the
+  // diagrams rather than just restyle them.
+  useEffect(() => {
+    if (!previewRef.current || !hasMermaidBlocks(previewRef.current)) {
+      return;
+    }
+
+    resetRenderedDiagrams(previewRef.current);
+    void renderMermaidDiagrams(previewRef.current, scheme);
+  }, [html, scheme]);
 
   if (!markdown.trim()) {
     return (
-      <div className="flex min-h-[320px] min-w-0 max-w-full items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white/75 p-8 text-center text-slate-500">
+      <div className="flex min-h-[320px] min-w-0 max-w-full items-center justify-center rounded-3xl border border-dashed border-base-content/25 bg-base-100 p-8 text-center text-base-content/60">
         هنوز محتوایی برای نمایش وجود ندارد.
       </div>
     );
@@ -30,7 +44,7 @@ export function MarkdownPreview({ markdown }: MarkdownPreviewProps) {
   return (
     <article
       ref={previewRef}
-      className="markdown-preview min-h-[320px] min-w-0 max-w-full overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8"
+      className="markdown-preview min-h-[320px] min-w-0 max-w-full overflow-hidden rounded-3xl border border-base-content/10 bg-base-100 p-6 shadow-sm md:p-8"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

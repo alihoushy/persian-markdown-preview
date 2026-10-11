@@ -52,7 +52,7 @@ export function PdfExportDialog({ onConfirm, onCancel }: PdfExportDialogProps) {
 
   return (
     <div
-      className="no-print fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm"
+      className="no-print fixed inset-0 z-50 flex items-center justify-center bg-neutral/50 p-4 backdrop-blur-sm"
       onClick={onCancel}
     >
       <div
@@ -60,18 +60,18 @@ export function PdfExportDialog({ onConfirm, onCancel }: PdfExportDialogProps) {
         aria-modal="true"
         aria-labelledby="pdf-dialog-title"
         onClick={(event) => event.stopPropagation()}
-        className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl md:p-7"
+        className="w-full max-w-lg rounded-3xl border border-base-content/10 bg-base-100 p-6 shadow-2xl md:p-7"
       >
         <div className="mb-5 flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-white">
+            <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-content">
               <Printer className="h-5 w-5" aria-hidden="true" />
             </span>
             <div>
-              <h2 id="pdf-dialog-title" className="text-lg font-black text-slate-950">
+              <h2 id="pdf-dialog-title" className="text-lg font-black text-base-content">
                 برای بهترین خروجی
               </h2>
-              <p className="mt-0.5 text-sm text-slate-500">
+              <p className="mt-0.5 text-sm text-base-content/60">
                 سه گزینه در پنجره‌ی چاپ مرورگر
               </p>
             </div>
@@ -80,7 +80,7 @@ export function PdfExportDialog({ onConfirm, onCancel }: PdfExportDialogProps) {
             type="button"
             onClick={onCancel}
             aria-label="بستن"
-            className="-m-1 rounded-xl p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+            className="-m-1 rounded-xl p-1 text-base-content/50 transition hover:bg-base-200 hover:text-base-content"
           >
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
@@ -88,26 +88,26 @@ export function PdfExportDialog({ onConfirm, onCancel }: PdfExportDialogProps) {
 
         <ol className="space-y-3">
           {TIPS.map((tip, index) => (
-            <li key={tip.title} className="flex gap-3 rounded-2xl bg-slate-50 p-3.5">
-              <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg bg-white text-xs font-black text-slate-950 shadow-sm">
+            <li key={tip.title} className="flex gap-3 rounded-2xl bg-base-200 p-3.5">
+              <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg bg-base-100 text-xs font-black text-base-content shadow-sm">
                 {index + 1}
               </span>
               <div className="min-w-0">
-                <p className="text-sm font-bold leading-6 text-slate-900">{tip.title}</p>
-                <p className="mt-0.5 text-xs leading-6 text-slate-500">{tip.body}</p>
+                <p className="text-sm font-bold leading-6 text-base-content">{tip.title}</p>
+                <p className="mt-0.5 text-xs leading-6 text-base-content/60">{tip.body}</p>
               </div>
             </li>
           ))}
         </ol>
 
         {degradedExport && (
-          <div className="mt-3 flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-3.5">
-            <TriangleAlert className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" aria-hidden="true" />
+          <div className="mt-3 flex gap-3 rounded-2xl border border-warning/30 bg-warning/10 p-3.5">
+            <TriangleAlert className="mt-0.5 h-5 w-5 flex-shrink-0 text-warning" aria-hidden="true" />
             <div className="min-w-0">
-              <p className="text-sm font-bold leading-6 text-amber-900">
+              <p className="text-sm font-bold leading-6 text-base-content">
                 خروجی فایرفاکس اموجی‌ها را تصویر می‌کند
               </p>
-              <p className="mt-0.5 text-xs leading-6 text-amber-800">
+              <p className="mt-0.5 text-xs leading-6 text-base-content/70">
                 صفحه درست چاپ می‌شود، ولی اموجی‌ها به‌جای متن به تصویر تبدیل می‌شوند (در بزرگ‌نمایی نرم دیده
                 می‌شوند) و متن فارسی در PDF قابل کپی و جست‌وجو نمی‌ماند. برای خروجی کاملاً برداری، همین صفحه را
                 در Chrome یا Edge باز کنید.
@@ -116,12 +116,12 @@ export function PdfExportDialog({ onConfirm, onCancel }: PdfExportDialogProps) {
           </div>
         )}
 
-        <label className="mt-5 flex cursor-pointer items-center gap-2.5 text-sm text-slate-600">
+        <label className="mt-5 flex cursor-pointer items-center gap-2.5 text-sm text-base-content/70">
           <input
             type="checkbox"
             checked={dontShowAgain}
             onChange={(event) => setDontShowAgain(event.target.checked)}
-            className="h-4 w-4 accent-slate-950"
+            className="h-4 w-4 accent-[var(--color-primary)]"
           />
           دیگر این راهنما را نشان نده
         </label>
@@ -131,7 +131,7 @@ export function PdfExportDialog({ onConfirm, onCancel }: PdfExportDialogProps) {
             ref={confirmRef}
             type="button"
             onClick={confirm}
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-primary-content transition hover:opacity-90"
           >
             <FileDown className="h-4 w-4" aria-hidden="true" />
             باز کردن پنجره‌ی چاپ
@@ -139,7 +139,7 @@ export function PdfExportDialog({ onConfirm, onCancel }: PdfExportDialogProps) {
           <button
             type="button"
             onClick={onCancel}
-            className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-800 transition hover:bg-slate-100"
+            className="inline-flex items-center justify-center rounded-2xl border border-base-content/20 bg-base-100 px-5 py-3 text-sm font-bold text-base-content transition hover:bg-base-200"
           >
             انصراف
           </button>

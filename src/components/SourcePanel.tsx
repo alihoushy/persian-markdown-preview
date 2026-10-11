@@ -36,13 +36,13 @@ export function SourcePanel({ selectedFile, onLoaded, onError }: SourcePanelProp
   }
 
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white/85 p-4 shadow-sm backdrop-blur sm:p-5">
-      <div className="mb-4 flex rounded-2xl bg-slate-100 p-1">
+    <section className="rounded-3xl border border-base-content/10 bg-base-100 p-4 shadow-sm sm:p-5">
+      <div className="mb-4 flex rounded-2xl bg-base-200 p-1">
         <button
           type="button"
           onClick={() => setTab('upload')}
           className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition ${
-            tab === 'upload' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+            tab === 'upload' ? 'bg-base-100 text-base-content shadow-sm' : 'text-base-content/60 hover:text-base-content'
           }`}
         >
           <UploadCloud className="h-4 w-4" aria-hidden="true" />
@@ -52,7 +52,7 @@ export function SourcePanel({ selectedFile, onLoaded, onError }: SourcePanelProp
           type="button"
           onClick={() => setTab('paste')}
           className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition ${
-            tab === 'paste' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+            tab === 'paste' ? 'bg-base-100 text-base-content shadow-sm' : 'text-base-content/60 hover:text-base-content'
           }`}
         >
           <ClipboardPaste className="h-4 w-4" aria-hidden="true" />
@@ -70,13 +70,13 @@ export function SourcePanel({ selectedFile, onLoaded, onError }: SourcePanelProp
             dir="auto"
             spellCheck={false}
             placeholder="متن کامل فایل Markdown را اینجا کپی و پیست کن..."
-            className="h-56 w-full resize-y rounded-2xl border border-slate-300 bg-slate-50 p-4 text-sm leading-7 text-slate-900 outline-none transition focus:border-slate-500 focus:bg-white"
+            className="h-56 w-full resize-y rounded-2xl border border-base-content/20 bg-base-200 p-4 text-sm leading-7 text-base-content outline-none transition focus:border-primary focus:bg-base-100"
           />
           <div className="flex flex-wrap gap-3">
             <button
               type="button"
               onClick={showPastedText}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-neutral px-5 py-3 text-sm font-bold text-neutral-content transition hover:opacity-90"
             >
               <Eye className="h-4 w-4" aria-hidden="true" />
               نمایش
@@ -85,13 +85,13 @@ export function SourcePanel({ selectedFile, onLoaded, onError }: SourcePanelProp
               type="button"
               onClick={clearPastedText}
               disabled={!pastedText}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-800 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-base-content/20 bg-base-100 px-5 py-3 text-sm font-bold text-base-content transition hover:bg-base-200 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Trash2 className="h-4 w-4" aria-hidden="true" />
               پاک کردن متن
             </button>
           </div>
-          <p className="text-xs leading-6 text-slate-500">
+          <p className="text-xs leading-6 text-base-content/60">
             متن پیست‌شده فقط داخل مرورگر خودت پردازش می‌شود و جایی ارسال نمی‌شود.
           </p>
         </div>

@@ -5,6 +5,7 @@ import { MarkdownPreview } from './components/MarkdownPreview';
 import type { ReadMarkdownResult } from './lib/file';
 import { exportAsPdf, isPdfDialogDismissed, toPdfFileName } from './lib/pdf';
 import { PdfExportDialog } from './components/PdfExportDialog';
+import { ThemePicker } from './components/ThemePicker';
 
 const SAMPLE_MARKDOWN = `# پیش‌نمایش Markdown فارسی
 
@@ -256,30 +257,31 @@ export default function App() {
   }
 
   return (
-    <main className="app-main min-h-screen bg-[radial-gradient(circle_at_top,_#e2e8f0,_transparent_35%),linear-gradient(135deg,_#f8fafc,_#e2e8f0)] px-4 py-8 text-slate-950 sm:px-6 lg:px-8">
+    <main className="app-main min-h-screen bg-base-200 px-4 py-8 text-base-content sm:px-6 lg:px-8">
       <div className="app-shell mx-auto max-w-6xl">
-        <header className="no-print mb-8 rounded-3xl border border-white/70 bg-white/75 p-6 shadow-sm backdrop-blur md:p-8">
+        <header className="no-print mb-8 rounded-3xl border border-base-content/10 bg-base-100 p-6 shadow-sm md:p-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-xs font-bold text-white">
+              <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-neutral px-4 py-2 text-xs font-bold text-neutral-content">
                 <ShieldCheck className="h-4 w-4" aria-hidden="true" />
                 پردازش داخل مرورگر انجام میشود
               </p>
-              <h1 className="text-3xl font-black tracking-tight text-slate-950 md:text-5xl">
+              <h1 className="text-3xl font-black tracking-tight text-base-content md:text-5xl">
                 مارک داون فارسی
               </h1>
-              <p className="mt-4 max-w-2xl text-base leading-8 text-slate-600">
+              <p className="mt-4 max-w-2xl text-base leading-8 text-base-content/70">
                 فایل Markdown را انتخاب کنید و خروجی برای فارسی ببین.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-3">
+              <ThemePicker />
               <button
                 type="button"
                 onClick={startPdfExport}
                 disabled={!hasContent || isExporting}
                 title={hasContent ? 'خروجی PDF با همین ظاهر' : 'ابتدا یک فایل Markdown را باز کنید'}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-primary-content transition hover:opacity-90 disabled:cursor-not-allowed disabled:bg-base-300 disabled:text-base-content/40"
               >
                 {isExporting ? (
                   <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -291,7 +293,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={loadSample}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-neutral px-5 py-3 text-sm font-bold text-neutral-content transition hover:opacity-90"
               >
                 <Eye className="h-4 w-4" aria-hidden="true" />
                 نمایش نمونه
@@ -299,7 +301,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={reset}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-800 transition hover:bg-slate-100"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-base-content/20 bg-base-100 px-5 py-3 text-sm font-bold text-base-content transition hover:bg-base-200"
               >
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
                 پاک‌سازی
@@ -313,14 +315,14 @@ export default function App() {
             <SourcePanel selectedFile={loadedFile} onLoaded={handleLoaded} onError={setError} />
 
             {isRemoteLoading && (
-              <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/85 p-4 text-sm font-bold text-slate-700 shadow-sm backdrop-blur">
-                <LoaderCircle className="h-5 w-5 animate-spin text-slate-950" aria-hidden="true" />
+              <div className="flex items-center gap-3 rounded-2xl border border-base-content/10 bg-base-100 p-4 text-sm font-bold text-base-content shadow-sm">
+                <LoaderCircle className="h-5 w-5 animate-spin" aria-hidden="true" />
                 در حال بارگذاری فایل Markdown...
               </div>
             )}
 
             {error && (
-              <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-7 text-red-700">
+              <div className="rounded-2xl border border-error/30 bg-error/10 p-4 text-sm leading-7 text-error">
                 {error}
               </div>
             )}
