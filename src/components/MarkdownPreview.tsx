@@ -44,7 +44,7 @@ export function MarkdownPreview({ markdown }: MarkdownPreviewProps) {
   return (
     <article
       ref={previewRef}
-      className="markdown-preview min-h-[320px] min-w-0 max-w-full overflow-hidden rounded-3xl border border-base-content/10 bg-base-100 p-6 shadow-sm md:p-8"
+      className="markdown-preview min-h-[320px] min-w-0 max-w-full overflow-hidden rounded-3xl border border-base-content/10 bg-base-100 p-5 shadow-sm sm:p-6 md:p-8"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

@@ -99,11 +99,14 @@ export function ThemePicker() {
         />
       </button>
 
+      {/* Anchored to the button's start (right) edge so the menu opens inwards:
+          the picker leads the action row, which on a phone sits flush against
+          the right edge of the screen. */}
       {isOpen && (
         <div
           role="listbox"
           aria-label="انتخاب پوسته"
-          className="absolute left-0 z-40 mt-2 max-h-[24rem] w-64 overflow-y-auto overscroll-contain rounded-2xl border border-base-content/15 bg-base-100 p-2 shadow-xl"
+          className="absolute start-0 z-40 mt-2 max-h-[min(24rem,60dvh)] w-64 max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain rounded-2xl border border-base-content/15 bg-base-100 p-2 shadow-xl"
         >
           <button
             type="button"

@@ -267,7 +267,7 @@ export default function App() {
     <main className="app-main min-h-screen bg-base-200 px-4 py-8 text-base-content sm:px-6 lg:px-8">
       <div className="app-shell mx-auto max-w-6xl">
         <header className="no-print mb-8 rounded-3xl border border-base-content/10 bg-base-100 p-6 shadow-sm md:p-8">
-          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
             <div>
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <p className="inline-flex items-center gap-2 rounded-full bg-neutral px-4 py-2 text-xs font-bold text-neutral-content">
@@ -284,6 +284,9 @@ export default function App() {
               </p>
             </div>
 
+            {/* Below md the buttons stretch to fill their row. Sample and reset
+                wrap as one pair, so a narrow screen gets two even rows instead
+                of a lone full-width button left over. */}
             <div className="flex flex-wrap gap-3">
               <ThemePicker />
               <button
@@ -291,7 +294,7 @@ export default function App() {
                 onClick={startPdfExport}
                 disabled={!hasContent || isExporting}
                 title={hasContent ? 'خروجی PDF با همین ظاهر' : 'ابتدا یک فایل Markdown را باز کنید'}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-primary-content transition hover:opacity-90 disabled:cursor-not-allowed disabled:bg-base-300 disabled:text-base-content/40"
+                className="inline-flex grow items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-primary-content transition hover:opacity-90 disabled:cursor-not-allowed disabled:bg-base-300 disabled:text-base-content/40 sm:px-5 md:grow-0"
               >
                 {isExporting ? (
                   <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -300,22 +303,24 @@ export default function App() {
                 )}
                 خروجی PDF
               </button>
-              <button
-                type="button"
-                onClick={loadSample}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-neutral px-5 py-3 text-sm font-bold text-neutral-content transition hover:opacity-90"
-              >
-                <Eye className="h-4 w-4" aria-hidden="true" />
-                نمایش نمونه
-              </button>
-              <button
-                type="button"
-                onClick={reset}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-base-content/20 bg-base-100 px-5 py-3 text-sm font-bold text-base-content transition hover:bg-base-200"
-              >
-                <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                پاک‌سازی
-              </button>
+              <div className="flex grow flex-wrap gap-3 md:grow-0">
+                <button
+                  type="button"
+                  onClick={loadSample}
+                  className="inline-flex grow items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-neutral px-4 py-3 text-sm font-bold text-neutral-content transition hover:opacity-90 sm:px-5 md:grow-0"
+                >
+                  <Eye className="h-4 w-4" aria-hidden="true" />
+                  نمایش نمونه
+                </button>
+                <button
+                  type="button"
+                  onClick={reset}
+                  className="inline-flex grow items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-base-content/20 bg-base-100 px-4 py-3 text-sm font-bold text-base-content transition hover:bg-base-200 sm:px-5 md:grow-0"
+                >
+                  <RotateCcw className="h-4 w-4" aria-hidden="true" />
+                  پاک‌سازی
+                </button>
+              </div>
             </div>
           </div>
         </header>

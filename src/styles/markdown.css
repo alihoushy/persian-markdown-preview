@@ -146,15 +146,22 @@
   border-radius: 1rem 0 0 1rem;
 }
 
+/* `display: block` is what lets a wide table scroll inside its own frame on a
+   phone. The frame hugs the table (max-content) rather than the column, or a
+   narrow table would leave it half empty — one rounded corner, an open side.
+   Borders are separate so the frame's own border draws the rounded edge and
+   each cell only adds its trailing rules. */
 .markdown-preview table {
-  width: 100%;
-  max-width: 100%;
-  border-collapse: collapse;
-  margin: 1.5rem 0;
-  overflow: hidden;
-  border-radius: 1rem;
   display: block;
+  width: max-content;
+  max-width: 100%;
   overflow-x: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--md-rule);
+  border-radius: 1rem;
+  margin: 1.5rem 0;
+  overscroll-behavior-x: contain;
 }
 
 .markdown-preview thead {
@@ -163,9 +170,19 @@
 
 .markdown-preview th,
 .markdown-preview td {
-  border: 1px solid var(--md-rule);
+  border-bottom: 1px solid var(--md-rule);
+  border-inline-end: 1px solid var(--md-rule);
   padding: 0.8rem 1rem;
   min-width: 120px;
+}
+
+.markdown-preview th:last-child,
+.markdown-preview td:last-child {
+  border-inline-end: 0;
+}
+
+.markdown-preview table > :last-child > tr:last-child > * {
+  border-bottom: 0;
 }
 
 .markdown-preview img {
@@ -514,6 +531,17 @@
 }
 
 /* Mermaid diagrams */
+
+/* A diagram is not code, so it must not inherit the code font from the `pre *`
+   rule above. Mermaid sizes every label box while measuring in the document
+   font; drawn in the monospace fallback instead, Persian labels came out wider
+   than their boxes and were clipped ("بله" → "له"), with their letters
+   disjoined. */
+.markdown-preview pre.mermaid,
+.markdown-preview pre.mermaid * {
+  font-family: inherit;
+}
+
 .markdown-preview pre.mermaid {
   direction: ltr;
   text-align: center;

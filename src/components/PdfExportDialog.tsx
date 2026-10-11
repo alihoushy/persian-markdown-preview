@@ -55,12 +55,14 @@ export function PdfExportDialog({ onConfirm, onCancel }: PdfExportDialogProps) {
       className="no-print fixed inset-0 z-50 flex items-center justify-center bg-neutral/50 p-4 backdrop-blur-sm"
       onClick={onCancel}
     >
+      {/* On a short phone the three tips outgrow the screen; scrolling inside
+          the card keeps the title and the buttons reachable. */}
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="pdf-dialog-title"
         onClick={(event) => event.stopPropagation()}
-        className="w-full max-w-lg rounded-3xl border border-base-content/10 bg-base-100 p-6 shadow-2xl md:p-7"
+        className="max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-3xl border border-base-content/10 bg-base-100 p-5 shadow-2xl sm:p-6 md:p-7"
       >
         <div className="mb-5 flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">

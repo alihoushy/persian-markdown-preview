@@ -71,6 +71,12 @@ export async function renderMermaidDiagrams(
     configure(mermaid, scheme);
   }
 
+  // Label boxes are sized by measuring their text, so measuring before
+  // Vazirmatn has arrived would size them for the fallback font.
+  if ('fonts' in document) {
+    await document.fonts.ready;
+  }
+
   for (const node of nodes) {
     // The container may have been re-rendered while awaiting the import.
     if (!node.isConnected) {
